@@ -1,9 +1,7 @@
 import json
 
-output: dict = {}
 
-
-def limpiar_valor(value: str):
+def limpiar_valor(value: str) -> str | int:
     value = value.strip()
     try:
         value = int(value)
@@ -12,11 +10,11 @@ def limpiar_valor(value: str):
     return value
 
 
-def parsear_titulos(titulos: str):
+def parsear_titulos(titulos: str) -> str:
     return titulos.replace(" ", "").replace("(", "").replace("`", "")[:-3:].split(",")
 
 
-def parsear_fila(fila: str):
+def parsear_fila(fila: str) -> list:
     estoy_en_valor: bool = False
 
     fila: str = fila.strip()[1:-2:]
@@ -47,26 +45,39 @@ def parsear_fila(fila: str):
     return fila_list
 
 
-def json_creation(to_dump: dict):
-    with open("output.json", "w") as file_final:
+def json_creation(to_dump: dict, file_name: str) -> str:
+    output_file_name: str = file_name + "_output.json"
+    with open(output_file_name, "w") as file_final:
         json.dump(to_dump, file_final)
+    return output_file_name
 
 
-with open("zonas.sql", "r") as file:
-    output: dict = {}
-    titulos: list = []
-    titulos = parsear_titulos(file.readline())
-    # print(titulos)
-    for line in file:
-        fila_lista: list = parsear_fila(line)
-        # print(fila_lista)
+####
 
-        assert len(titulos) == len(fila_lista), (
-            "No coincide la cantidad de elementos con la cantidad de titulos, podrias perder info"
-        )
 
-        zipped_list: dict = dict(zip(titulos, fila_lista))
-        output[fila_lista[0]] = zipped_list
-        # print(output)
+def parsear_archivo(file_name: str) -> dict:
+    with open(file_name, "r") as file:
+        output: dict = {}
+        titulos: list = []
+        titulos = parsear_titulos(file.readline())
+        # print(titulos)
+        for line in file:
+            fila_lista: list = parsear_fila(line)
+            # print(fila_lista)
 
-    json_creation(output)
+            assert len(titulos) == len(fila_lista), (
+                "No coincide la cantidad de elementos con la cantidad de titulos, podrias perder info"
+            )
+
+            zipped_list: dict = dict(zip(titulos, fila_lista))
+            output[fila_lista[0]] = zipped_list
+            # print(output)
+        return output
+
+
+zonas_parseado: dict = parsear_archivo("zonas.sql")
+print(zonas_parseado)
+# usuarios_parseado:dict =  parsear_archivo("usuarios.sql")
+
+
+# created_file: str = json_creation(output, file_name)
