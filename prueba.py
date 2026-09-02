@@ -12,7 +12,7 @@ def limpiar_valor(value: str) -> str | int:
     return value
 
 
-def parsear_titulos(titulos: str) -> str:
+def parsear_titulos(titulos: str) -> list:
 
     return (
         titulos[titulos.find("(") + 1 : titulos.rfind(")")]
@@ -55,8 +55,9 @@ def parsear_fila(fila: str) -> list:
 
 def json_creation(to_dump: dict, file_name: str) -> str:
     output_file_name: str = file_name + "_output.json"
-    with open(output_file_name, "w") as file_final:
-        json.dump(to_dump, file_final)
+    # print(to_dump)
+    with open(output_file_name, "w", encoding="utf-8") as file_final:
+        json.dump(to_dump, file_final, ensure_ascii=False, indent=4)
     return output_file_name
 
 
@@ -122,7 +123,9 @@ def cruzar_usuarios_x_zonas(zonas: dict, usuarios: dict) -> dict:
             output[zonas[dict_usuario["zona_id"]]["nombre"]].append(armar_usuario_para_zonas(dict_usuario))
             
  
-    print(output)
+    # print(output)lñopppppppppppppppppppppppppppppooo
+    #$
+    return output
 
 
 zonas_parseado: dict = parsear_archivo("zonas.sql", "id")
@@ -131,5 +134,6 @@ usuarios_parseado: dict = parsear_archivo("usuarios.sql", "email")
 # print(usuarios_parseado)
 
 usuarios_x_zonas: dict = cruzar_usuarios_x_zonas(zonas_parseado, usuarios_parseado)
+print(usuarios_x_zonas)
 
 created_file: str = json_creation(usuarios_x_zonas, "usuarios por zonas")
